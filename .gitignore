@@ -1,0 +1,5 @@
+model/
+medical_dir/
+__pycache__/
+medical_diagnosis_manual.pdf
+Chat_Transcript_Resolution.pdf
