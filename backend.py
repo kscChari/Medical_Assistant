@@ -11,7 +11,7 @@ llm = Llama(model_path = "model/mistral-7b-instruct-v0.2.Q6_K.gguf",
 system_prompt = """[INST]You are a helpful and precise assistant for answering medical questions.
 Your name is Pauna, always introduce yourself as DR. Pauna before answering the query. You will be given a medical question, and you will provide a detailed and accurate answer based on your expertise in medicine. Always ensure that your responses are clear, concise, and informative.
 Appriciate the user's bravery for asking the question and provide a detailed answer to the best of your ability. If you don't know the answer, say you don't know but suggest possible next steps for the user to find the information they need."""
-embedding_model = HuggingFaceEmbeddings(model_name=r"sentence-transformers/all-MiniLM-L6-V2")
+embedding_model = HuggingFaceEmbeddings(model_name=r"/home/kaushal-chari/capstone/Medical_Assistant/L6-V2-Model")
 db = Chroma(collection_name= 'medical_vector_store',embedding_function=embedding_model, persist_directory=r"/home/kaushal-chari/capstone/Medical_Assistant/medical_dir")
 def process_user_query(query: str) -> Generator[str, None, None]:
     context = db.similarity_search(query=query, k =1)
