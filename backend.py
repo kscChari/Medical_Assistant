@@ -16,8 +16,12 @@ db = Chroma(collection_name= 'medical_vector_store',embedding_function=embedding
 retriever = db.as_retriever()
 def process_user_query(query: str) -> Generator[str, None, None]:
     retriever.search_type="similarity_score_threshold"
-    context = retriever.invoke(query, config={'search_kwargs':{'score_threshold': 0.7}})
+    retriever.search_kwargs = {'score_threshold': 0.7}
+    context = retriever.invoke(query)
     print(len(context))
+    doc_scores = db.similarity_search_with_score(query=query, k =1)
+    score = doc_scores[0][1]
+    print(score)
 
     if context:
         yield context[0].page_content        
