@@ -13,17 +13,28 @@ Your name is Pauna, always introduce yourself as DR. Pauna before answering the 
 Appriciate the user's bravery for asking the question and provide a detailed answer to the best of your ability. If you don't know the answer, say you don't know but suggest possible next steps for the user to find the information they need."""
 embedding_model = HuggingFaceEmbeddings(model_name=r"/home/kaushal-chari/capstone/Medical_Assistant/L6-V2-Model")
 db = Chroma(collection_name= 'medical_vector_store',embedding_function=embedding_model, persist_directory=r"/home/kaushal-chari/capstone/Medical_Assistant/medical_dir")
+retriever = db.as_retriever()
 def process_user_query(query: str) -> Generator[str, None, None]:
-    context = db.similarity_search(query=query, k =1)
+    retriever.search_type="similarity_score_threshold"
+    context = retriever.invoke(query, config={'search_kwargs':{'score_threshold': 0.7}})
     print(len(context))
-    yield context[0].page_content
-    output = llm(prompt=system_prompt + "\n\n" + "context:\n"+ context[0].page_content + query + " [/INST]",
+
+    if context:
+        yield context[0].page_content        
+        output = llm(prompt=system_prompt + "\n\n" + "context:\n"+ context[0].page_content + query + " [/INST]",
+                 max_tokens=1000,
+                 temperature=0.0,
+                 stream=True)
+        print(context[0].page_content)
+    else:
+        yield "no relevant data found"
+        output = llm(prompt=system_prompt + "\n\n" + query + " [/INST]",
                  max_tokens=1000,
                  temperature=0.0,
                  stream=True)
     # This prints directly to your terminal screen where Streamlit is running
     print(f"\n[BACKEND LOG] Received user query:\n{query}\n")
-    print(context[0].page_content)
+
 
     for token in output:
     # Return a message back to the frontend
