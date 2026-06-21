@@ -36,3 +36,7 @@ try:
     print(data_peek)
 except Exception as e:
     print(f"Error peeking into collection: {e}")
+
+context = [7]
+if context:
+    print("context exists")

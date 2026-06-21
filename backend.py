@@ -9,9 +9,11 @@ def make_prompt():
     final_prompt = ''
     for i in st.session_state.chat_history:
         if 'user' in i.keys():
-            final_prompt = final_prompt + '[INST]' +"user\n"+i['user'] +'[/INST]'+ '\n'
-        elif 'model' in i.keys():
-            final_prompt = final_prompt + 'model\n' +i['model'] + '\n'
+            final_prompt = final_prompt  +"user\n\n:"+i['user'] + '  \n'
+        if 'model' in i.keys():
+            final_prompt = final_prompt + '\n\n' + 'model:\n\n' +i['model'] + '\n'
+        if 'context' in i.keys():
+            final_prompt = final_prompt + '\n\n'+"context:" + "\n\n" + i['context'] 
     return final_prompt
             
 
@@ -33,13 +35,15 @@ def process_user_query(query: str) -> Generator[str, None, None]:
     retriever.search_type="similarity_score_threshold"
     retriever.search_kwargs = {'score_threshold': 0.5}
     context =[]
-    if len(st.session_state.chat_history) == 0:
+    if len(st.session_state.chat_history) == 1:
         context = retriever.invoke(query)
+        st.session_state.chat_history.append({'context': context[0].page_content})
+        print("the retrieved constext is given here:\n" + context[0].page_content)
     #print(f'context length is {len(context)}')
-    doc_scores = db.similarity_search_with_relevance_scores(query=query, k =1)
-    score = doc_scores[0][1]
-    print(doc_scores[0][0].page_content)
-    print(f'the score was: {score}')
+        doc_scores = db.similarity_search_with_relevance_scores(query=query, k =1)
+        score = doc_scores[0][1]
+        print(doc_scores[0][0].page_content)
+        print(f'the score was: {score}')
 
     if context:
         yield context[0].page_content        
