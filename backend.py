@@ -47,7 +47,7 @@ def process_user_query(query: str) -> Generator[str, None, None]:
 
     if context:
         yield context[0].page_content
-        prompt =  system_prompt + "\n\n" + "context:\n\n" + make_prompt() + '\n'
+        prompt =  system_prompt + "\n\n"  + make_prompt() + '\n'
         print("="*30)
         print("PROMPT IS: \n")
         print(prompt)
