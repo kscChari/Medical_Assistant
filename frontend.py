@@ -28,7 +28,7 @@ def render_ui():
         
     # Trigger processing when the user submits a query
     if user_query:
-        st.session_state.chat_history.append({'user':'[INST]' + user_query + '[/INST]'})
+        st.session_state.chat_history.append({'user':  user_query })
         # 1. Send the input to backend.py to be printed/processed
         backend_response = process_user_query(user_query)
         context = next(backend_response)

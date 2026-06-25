@@ -9,11 +9,11 @@ def make_prompt():
     final_prompt = ''
     for i in st.session_state.chat_history:
         if 'user' in i.keys():
-            final_prompt = final_prompt  +"user\n\n:"+i['user'] + '  \n'
+            final_prompt = final_prompt + "\n\n"+'[INST]'+"user\n\n:"+i['user'] + '[/INST]'+  '\n'
         if 'model' in i.keys():
             final_prompt = final_prompt + '\n\n' + 'model:\n\n' +i['model'] + '\n'
         if 'context' in i.keys():
-            final_prompt = final_prompt + '\n\n'+"context:" + "\n\n" + i['context'] 
+            final_prompt = final_prompt + '[INST]'+ '\n\n'+"context:" + "\n\n" + i['context']  +'[/INST]'+ "\n\n"
     return final_prompt
             
 
@@ -46,8 +46,13 @@ def process_user_query(query: str) -> Generator[str, None, None]:
         print(f'the score was: {score}')
 
     if context:
-        yield context[0].page_content        
-        output = llm(prompt=system_prompt + "\n\n" + "context:\n"+ context[0].page_content + make_prompt() + '\n',
+        yield context[0].page_content
+        prompt =  system_prompt + "\n\n" + "context:\n\n" + make_prompt() + '\n'
+        print("="*30)
+        print("PROMPT IS: \n")
+        print(prompt)
+        print("="*30)     
+        output = llm(prompt=prompt,
                  max_tokens=1000,
                  temperature=0.0,
                  stream=True)
